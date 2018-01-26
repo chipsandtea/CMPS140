@@ -80,17 +80,80 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoal(problem.startingState())
   print "Start's successors:", problem.successorStates(problem.startingState())
   """
-  print "Start:", problem.startingState()
-  util.raiseNotDefined()
+  # print "Start:", problem.startingState()
+  # print "Is the start a goal?", problem.isGoal(problem.startingState())
+  # print "Start's successors:", problem.successorStates(problem.startingState())
+  from game import Directions
+
+
+  # Init an empty LIFO stack, and push start state.
+  # Each entry is a tuple: (node, path to node as a list)
+  frontier = util.Stack()
+  # start state and empty path
+  frontier.push(((problem.startingState(), "null", 0), []))
+
+  # Init an empty explored set
+  explored = set()
+  while True:
+      # If no nodes to expand, failure.
+      if frontier.isEmpty():
+          return []
+      # Pop off the top of the stack
+      node, path = frontier.pop()
+      if problem.isGoal(node[0]):
+          # print path
+          return path
+      explored.add(node)
+      successors = problem.successorStates(node[0])
+      for succ_node in successors:
+          if succ_node not in explored:
+              frontier.push((succ_node, path + [succ_node[1]]))
 
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
-  util.raiseNotDefined()
+  frontier = util.Queue()
+  frontier.push(((problem.startingState(), "null", 0), []))
+
+  # Init an empty explored set
+  explored = set()
+  while True:
+      # If no nodes to expand, failure.
+      if frontier.isEmpty():
+          return []
+      # Pop off the top of the stack
+      node, path = frontier.pop()
+      if problem.isGoal(node[0]):
+          print path
+          return path
+      explored.add(node)
+      successors = problem.successorStates(node[0])
+      for succ_node in successors:
+          if succ_node not in explored:
+              frontier.push((succ_node, path + [succ_node[1]]))
+
 
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
-  util.raiseNotDefined()
+  frontier = util.PriorityQueue()
+  frontier.push(((problem.startingState(), "null", 0), []), 0)
+
+  # Init an empty explored set
+  explored = set()
+  while True:
+      # If no nodes to expand, failure.
+      if frontier.isEmpty():
+          return []
+      # Pop off the top of the stack
+      node, path = frontier.pop()
+      if problem.isGoal(node[0]):
+          print path
+          return path
+      explored.add(node)
+      successors = problem.successorStates(node[0])
+      for succ_node in successors:
+          if succ_node not in explored:
+              frontier.push((succ_node, path + [succ_node[1]]), succ_node[2])
 
 def nullHeuristic(state, problem=None):
   """
