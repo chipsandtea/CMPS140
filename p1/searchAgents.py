@@ -282,7 +282,7 @@ class CornersProblem(search.SearchProblem):
     self._expanded = 0 # Number of search nodes expanded
 
     "*** Your Code Here ***"
-    visited = [False, False, False, False]
+    visited = (False, False, False, False)
     self.startState = (self.startingPosition, visited)
 
 
@@ -342,7 +342,7 @@ class CornersProblem(search.SearchProblem):
           corner_idx = self.corners.index(nextCoord)
           newCornerList = list(cornerList)
           newCornerList[corner_idx] = True
-          nextState = (nextCoord, newCornerList)
+          nextState = (nextCoord, tuple(newCornerList))
         else:
           nextState = (nextCoord, cornerList)
 

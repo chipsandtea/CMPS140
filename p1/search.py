@@ -126,6 +126,7 @@ def breadthFirstSearch(problem):
       if problem.isGoal(node[0]):
           print path
           return path
+      print(node)
       explored.add(node)
       successors = problem.successorStates(node[0])
       for succ_node in successors:
@@ -175,7 +176,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
       # Pop off the top of the stack
       node, path = frontier.pop()
       if problem.isGoal(node[0]):
-          print path
           return path
       print(node)
       explored.add(node)
