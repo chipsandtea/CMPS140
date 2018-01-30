@@ -101,12 +101,15 @@ def depthFirstSearch(problem):
       # Pop off the top of the stack
       node, path = frontier.pop()
       if problem.isGoal(node[0]):
-          # print path
+          print(path)
+          print(explored)
           return path
-      explored.add(node)
+      explored.add(node[0])
       successors = problem.successorStates(node[0])
       for succ_node in successors:
-          if succ_node not in explored:
+          if succ_node[0] not in explored:
+              if succ_node[0] == problem.startingState():
+                  print('yo')
               frontier.push((succ_node, path + [succ_node[1]]))
 
 
@@ -127,10 +130,10 @@ def breadthFirstSearch(problem):
           print path
           return path
       print(node)
-      explored.add(node)
+      explored.add(node[0])
       successors = problem.successorStates(node[0])
       for succ_node in successors:
-          if succ_node not in explored:
+          if succ_node[0] not in explored:
               frontier.push((succ_node, path + [succ_node[1]]))
 
 
@@ -150,10 +153,10 @@ def uniformCostSearch(problem):
       if problem.isGoal(node[0]):
           print path
           return path
-      explored.add(node)
+      explored.add(node[0])
       successors = problem.successorStates(node[0])
       for succ_node in successors:
-          if succ_node not in explored:
+          if succ_node[0] not in explored:
               frontier.push((succ_node, path + [succ_node[1]]), succ_node[2])
 
 def nullHeuristic(state, problem=None):
@@ -178,10 +181,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
       if problem.isGoal(node[0]):
           return path
       print(node)
-      explored.add(node)
+      explored.add(node[0])
       successors = problem.successorStates(node[0])
       for succ_node in successors:
-          if succ_node not in explored:
+          if succ_node[0] not in explored:
               frontier.push((succ_node, path + [succ_node[1]]), succ_node[2] + heuristic(succ_node[0], problem))
 
 
