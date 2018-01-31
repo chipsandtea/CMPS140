@@ -295,9 +295,9 @@ class CornersProblem(search.SearchProblem):
   def isGoal(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** Your Code Here ***"
-    visited = state[1]
-    for corner in visited:
-      if not corner:
+    corners = state[1]
+    for visited in corners:
+      if not visited:
         return False
     return True
 
@@ -385,17 +385,11 @@ def cornersHeuristic(state, problem):
 
   "*** Your Code Here ***"
   # The Heuristic: The distance from that node to the closest *unreached* corner.
-  currCoord = state[0] # Tuple of (x, y) coordinates of the current state.
+  curr_x, curr_y = state[0]
   cornerList = state[1] # List of four bools representing each corner.
-  minDistToCorner = 999999 # Hopefully big enough lol
 
-  for i in range(len(cornerList)):
-    if not cornerList[i]:
-      cornerCoords = corners[i]
-      cornerDist = abs(currCoord[0] - cornerCoords[0]) + abs(currCoord[1] - cornerCoords[1])
-      if cornerDist < minDistToCorner:
-        minDistToCorner = cornerDist
-  return minDistToCorner
+  unreached = [corners[c_idx] for c_idx in range(len(cornerList)) if not cornerList[c_idx]]
+  return max([abs(curr_x - x_1) + abs(curr_y - y_1) for x_1, y_1 in unreached] + [0])
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

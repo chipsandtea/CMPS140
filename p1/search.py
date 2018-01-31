@@ -94,23 +94,23 @@ def depthFirstSearch(problem):
 
   # Init an empty explored set
   explored = set()
-  while True:
-      # If no nodes to expand, failure.
-      if frontier.isEmpty():
-          return []
+  while not frontier.isEmpty():
       # Pop off the top of the stack
       node, path = frontier.pop()
       if problem.isGoal(node[0]):
-          print(path)
-          print(explored)
+          #print(path)
+          #print(explored)
           return path
-      explored.add(node[0])
+      if node[0] in explored:
+          continue
       successors = problem.successorStates(node[0])
+      explored.add(node[0])
       for succ_node in successors:
           if succ_node[0] not in explored:
               if succ_node[0] == problem.startingState():
                   print('yo')
               frontier.push((succ_node, path + [succ_node[1]]))
+  return []
 
 
 def breadthFirstSearch(problem):
@@ -120,45 +120,44 @@ def breadthFirstSearch(problem):
 
   # Init an empty explored set
   explored = set()
-  while True:
-      # If no nodes to expand, failure.
-      if frontier.isEmpty():
-          return []
+  while not frontier.isEmpty():
       # Pop off the top of the stack
       node, path = frontier.pop()
       if problem.isGoal(node[0]):
-          print path
+          #print path
+          #print(explored)
           return path
-      print(node)
-      explored.add(node[0])
+      if node[0] in explored:
+          continue
       successors = problem.successorStates(node[0])
+      explored.add(node[0])
       for succ_node in successors:
           if succ_node[0] not in explored:
               frontier.push((succ_node, path + [succ_node[1]]))
+  return [] # only reaches this if no nodes left to expand; no path found
 
 
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   frontier = util.PriorityQueue()
-  frontier.push(((problem.startingState(), "null", 0), []), 0)
+  frontier.push(((problem.startingState(), "null", 0), [], 0), 0)
 
   # Init an empty explored set
   explored = set()
-  while True:
-      # If no nodes to expand, failure.
-      if frontier.isEmpty():
-          return []
+  while not frontier.isEmpty():
       # Pop off the top of the stack
-      node, path = frontier.pop()
+      node, path, pathCost = frontier.pop()
       if problem.isGoal(node[0]):
-          print path
           return path
-      explored.add(node[0])
+      if node[0] in explored:
+          continue
       successors = problem.successorStates(node[0])
+      explored.add(node[0])
       for succ_node in successors:
           if succ_node[0] not in explored:
-              frontier.push((succ_node, path + [succ_node[1]]), succ_node[2])
-
+              newPathCost = pathCost + succ_node[2]
+              frontier.push((succ_node, path + [succ_node[1]], newPathCost), newPathCost)
+  return []
 def nullHeuristic(state, problem=None):
   """
   A heuristic function estimates the cost from the current state to the nearest
@@ -170,22 +169,25 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
   frontier = util.PriorityQueue()
-  frontier.push(((problem.startingState(), "null", 0), []), 0)
+  frontier.push(((problem.startingState(), None, 0), [], 0), 0)
   explored = set()
-  while True:
-      # If no nodes to expand, failure.
-      if frontier.isEmpty():
-          return []
+  while not frontier.isEmpty():
       # Pop off the top of the stack
-      node, path = frontier.pop()
+      node, path, combinedCost = frontier.pop()
       if problem.isGoal(node[0]):
+          print('GOAL')
+          print(node)
           return path
-      print(node)
-      explored.add(node[0])
+      if node[0] in explored:
+          continue
       successors = problem.successorStates(node[0])
+      explored.add(node[0])
       for succ_node in successors:
           if succ_node[0] not in explored:
-              frontier.push((succ_node, path + [succ_node[1]]), succ_node[2] + heuristic(succ_node[0], problem))
+              sumCosts = combinedCost + succ_node[2]
+              heuristicCost = sumCosts + heuristic(succ_node[0], problem)
+              frontier.push((succ_node, path + [succ_node[1]], sumCosts), heuristicCost)
+  return []
 
 
 # Abbreviations
