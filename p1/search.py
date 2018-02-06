@@ -11,7 +11,7 @@ In search.py, you will implement generic search algorithms which are called
 by Pacman agents (in searchAgents.py).
 """
 
-import util
+import util, sys
 
 class SearchProblem:
   """
@@ -98,8 +98,6 @@ def depthFirstSearch(problem):
       # Pop off the top of the stack
       node, path = frontier.pop()
       if problem.isGoal(node[0]):
-          #print(path)
-          #print(explored)
           return path
       if node[0] in explored:
           continue
@@ -123,17 +121,14 @@ def breadthFirstSearch(problem):
   while not frontier.isEmpty():
       # Pop off the top of the stack
       node, path = frontier.pop()
+      print(sys.getsizeof(frontier.list))
       if problem.isGoal(node[0]):
-          #print path
-          #print(explored)
           return path
-      if node[0] in explored:
-          continue
-      successors = problem.successorStates(node[0])
-      explored.add(node[0])
-      for succ_node in successors:
-          if succ_node[0] not in explored:
-              frontier.push((succ_node, path + [succ_node[1]]))
+      if node[0] not in explored:
+          explored.add(node[0])
+          for succ_node in problem.successorStates(node[0]):
+              if succ_node[0] not in explored:
+                  frontier.push((succ_node, path + [succ_node[1]]))
   return [] # only reaches this if no nodes left to expand; no path found
 
 
@@ -168,6 +163,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
+  from copy import deepcopy
   frontier = util.PriorityQueue()
   frontier.push(((problem.startingState(), None, 0), [], 0), 0)
   explored = set()

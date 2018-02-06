@@ -412,6 +412,7 @@ class FoodSearchProblem:
     self.startingGameState = startingGameState
     self._expanded = 0
     self.heuristicInfo = {} # A dictionary for the heuristic to store information
+    self.heuristicInfo['startingState'] = startingGameState
 
   def startingState(self):
     return self.start
@@ -480,7 +481,20 @@ def foodHeuristic(state, problem):
   """
   position, foodGrid = state
   "*** Your Code Here ***"
-  return 0
+  foodList = foodGrid.asList()
+  #print(len(foodList))
+  ''' WHY DO YOU NOT WORK
+    lst = [mazeDistance(position, foodPos, problem.heuristicInfo['startingState']) for foodPos in foodList]
+    if len(lst) == 0:
+        return 0
+    else:
+      return max(lst)
+    '''
+  val = max([mazeDistance(position, foodPos, problem.heuristicInfo['startingState']) for foodPos in foodList] + [0])
+  return val
+  #return max([abs(position[0] - fPos[0]) + abs(position[1] - fPos[1]) for fPos in foodList] + [0])
+
+
 
 def numFoodHeuristic(state, problem):
   return state[1].count()
@@ -590,4 +604,6 @@ def mazeDistance(point1, point2, gameState):
   assert not walls[x1][y1], 'point1 is a wall: ' + point1
   assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
   prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False)
-  return len(search.bfs(prob))
+  val = len(search.bfs(prob))
+  print(val)
+  return val
