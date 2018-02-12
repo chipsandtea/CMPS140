@@ -62,13 +62,49 @@ class ReflexAgent(Agent):
     """
     # Useful information you can extract from a GameState (pacman.py)
     successorGameState = currentGameState.generatePacmanSuccessor(action)
-    newPosition = successorGameState.getPacmanPosition()
+    newPos = successorGameState.getPacmanPosition()
     oldFood = currentGameState.getFood()
+    foodCount = currentGameState.getNumFood()
+    foodList = oldFood.asList()
+    #print(foodList)
+
+
     newGhostStates = successorGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-    "*** YOUR CODE HERE ***"
-    return successorGameState.getScore()
+    score = successorGameState.getScore()
+    if successorGameState.isWin():
+      return float('inf')
+
+    # Get distance of closest ghost.
+    ghostDist = min([manhattanDistance(gPos, newPos) for gPos in successorGameState.getGhostPositions()])
+
+    # If ghost is on this position, you die. So, penalize.
+    if ghostDist == 0:
+      ghostDist -= 1000
+
+    # If the closest ghost is really far away, penalize, but not as much.
+    # 18 because PacMan kept getting stuck around 18?
+    # is 18 a magic number? 17 fails like 3/10 times but 18 works 10/10 times lol.
+    # Definitely has to do with the size of the game board.
+    if ghostDist > 18:
+      ghostDist -= 500
+
+    # Found that PacMan would play too conservatively(?) if the ratio of ghostDist / foodDist wasn't very optimal.
+    # This is to penalize inaction. In theory should work because we have sufficient penalizing for actually
+    # terrible decisions. Might thrash a bit more, but at the very least won't waste time otherwise.
+    if action == Directions.STOP:
+      score -= 10
+
+    foodDist = min([manhattanDistance(pellPos, newPos) for pellPos in foodList if manhattanDistance(pellPos, newPos) != 0])
+
+
+    # Ratio between closer ghost and closer food. Scale of priority. 
+    # If a ghost is close and food is far, then the action will be penalized.
+    # If a ghost is far and food is close, then action will be preferred!
+    score += ghostDist / foodDist
+    print(score)
+    return score
 
 def scoreEvaluationFunction(currentGameState):
   """
