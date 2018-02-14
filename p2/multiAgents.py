@@ -99,11 +99,11 @@ class ReflexAgent(Agent):
     foodDist = min([manhattanDistance(pellPos, newPos) for pellPos in foodList if manhattanDistance(pellPos, newPos) != 0])
 
 
-    # Ratio between closer ghost and closer food. Scale of priority. 
+    # Ratio between closer ghost and closer food. Scale of priority.
     # If a ghost is close and food is far, then the action will be penalized.
     # If a ghost is far and food is close, then action will be preferred!
     score += ghostDist / foodDist
-    print(score)
+    #print(score)
     return score
 
 def scoreEvaluationFunction(currentGameState):
@@ -162,7 +162,106 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns the total number of agents in the game
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    initDepth = 1
+    action = self.maximizer(gameState, initDepth)
+    #print(action)
+    return action
+
+  def maximizer(self, gameState, currDepth):
+    # PacMan maximizer node.
+    # If game is over, return the value of the current gameState
+    if gameState.isWin() or gameState.isLose():
+      return self.evaluationFunction(gameState)
+    # Default best move to STOP.
+    bestMove = Directions.STOP
+    bestVal = float('-inf')
+    legalActions = gameState.getLegalActions(0)
+    # For every action, find the max value and action the minimizer nodes one level down would return.
+    successors = [(gameState.generateSuccessor(0, action), action) for action in legalActions]
+    for succ in successors:
+      tempVal = self.minimizer(succ[0], currDepth, 1)
+      if tempVal > bestVal:
+        bestVal = tempVal
+        bestMove = succ[1]
+
+    # If we have recursed back to the root maximizer node, return the action.
+    # Otherwise, return the value (only at the root does the action matter).
+    if currDepth == 1:
+      #print(bestVal)
+      return bestMove
+    return bestVal
+
+  def minimizer(self, gameState, currDepth, agentIdx):
+    # Ghost minimizer node.
+    if gameState.isWin() or gameState.isLose():
+      return self.evaluationFunction(gameState)
+    # If we have run out of ghosts, we must now consider PacMan's turn and return the minimum.
+    if agentIdx == gameState.getNumAgents() - 1:
+      legalActions = gameState.getLegalActions(agentIdx)
+      worstVal = float('inf')
+      successors = [gameState.generateSuccessor(agentIdx, action) for action in legalActions]
+      # If we are at maximum depth, return the value of each successor gameState.
+      if currDepth == self.treeDepth:
+        for succGameState in successors:
+          worstVal = min(worstVal, self.evaluationFunction(succGameState))
+      # If not, then return the min value of maximizer nodes on successor gameStates.
+      else:
+        for succGameState in successors:
+          worstVal = min(worstVal, self.maximizer(succGameState, currDepth+1))
+      return worstVal
+    # If we are at not at maximum depth, return the minimum of each successive ghosts minimizer value.
+    # Eventually, this will proc the previous if statement, complete the level traversal at currDepth,
+    # and move on to the next one.
+    else:
+      legalActions = gameState.getLegalActions(agentIdx)
+      worstVal = float('inf')
+      successors = [gameState.generateSuccessor(agentIdx, action) for action in legalActions]
+      for succGameState in successors:
+        worstVal = min(worstVal, self.minimizer(succGameState, currDepth, agentIdx+1))
+      return worstVal
+
+
+
+'''
+  def minimax(self, gameState, agentIdx, currDepth):
+    # If terminal node, return node value.
+    if currDepth == self.treeDepth:
+      return ('', self.evaluationFunction(gameState))
+
+    # If agentIdx > number of agents, reset to PacMan idx.
+    if agentIdx >= gameState.getNumAgents():
+      agentIdx = 0
+      currDepth += 1
+
+    if agentIdx == 0: # If we're PacMan, then play as Maximizer node.
+      val = (Directions.STOP, float('-inf'))
+      legalActions = gameState.getLegalActions(agentIdx)
+      for action in legalActions:
+        #print(action)
+        if action == Directions.STOP:
+          continue
+        tempVal = (action, self.minimax(gameState.generateSuccessor(agentIdx, action), agentIdx+1, currDepth))
+        if tempVal[1] > val[1]:
+          val = tempVal
+      #print(val)
+      return val
+    else:
+      val = (Directions.STOP, float('inf'))
+      legalActions = gameState.getLegalActions(agentIdx)
+      for action in legalActions:
+        #print(action)
+        if action == Directions.STOP:
+          continue
+        tempVal = (action, self.minimax(gameState.generateSuccessor(agentIdx, action), agentIdx+1, currDepth))
+        if tempVal[1] < val[1]:
+          val = tempVal
+      #print(val)
+      return val
+'''
+
+
+
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
@@ -174,7 +273,78 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       Returns the minimax action using self.treeDepth and self.evaluationFunction
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    initDepth = 1
+    action = self.maximizer(gameState, initDepth, float('-inf'), float('inf'))
+    #print(action)
+    return action
+
+  def maximizer(self, gameState, currDepth, alpha, beta):
+    # PacMan maximizer node.
+    # If game is over, return the value of the current gameState
+    if gameState.isWin() or gameState.isLose():
+      return self.evaluationFunction(gameState)
+    # Default best move to STOP.
+    bestMove = Directions.STOP
+    bestVal = float('-inf')
+    legalActions = gameState.getLegalActions(0)
+    # For every action, find the max value and action the minimizer nodes one level down would return.
+    successors = [(gameState.generateSuccessor(0, action), action) for action in legalActions]
+    for succ in successors:
+      if succ[1] == Directions.STOP:
+        continue
+      tempVal = self.minimizer(succ[0], currDepth, 1, alpha, beta)
+      if tempVal > bestVal:
+        bestVal = tempVal
+        bestMove = succ[1]
+      if bestVal > beta:
+        return bestVal
+      alpha = max(alpha, bestVal)
+
+    # If we have recursed back to the root maximizer node, return the action.
+    # Otherwise, return the value (only at the root does the action matter).
+    if currDepth == 1:
+      #print(bestVal)
+      return bestMove
+    return bestVal
+
+  def minimizer(self, gameState, currDepth, agentIdx, alpha, beta):
+    if agentIdx == gameState.getNumAgents() - 1:
+      legalActions = gameState.getLegalActions(agentIdx)
+      worstVal = float('inf')
+      successors = [gameState.generateSuccessor(agentIdx, action) for action in legalActions]
+      # If we are at maximum depth, return the value of each successor gameState.
+      if currDepth == self.treeDepth:
+        for succGameState in successors:
+          worstVal = min(worstVal, self.evaluationFunction(succGameState))
+          if worstVal < alpha:
+            #print(worstVal, alpha)
+            return worstVal
+          beta = min(beta, worstVal)
+      # If not, then return the min value of maximizer nodes on successor gameStates.
+      else:
+        for succGameState in successors:
+          worstVal = min(worstVal, self.maximizer(succGameState, currDepth+1, alpha, beta))
+          #print(worstVal)
+          if worstVal < alpha:
+            #print(worstVal, alpha)
+            return worstVal
+          beta = min(beta, worstVal)
+      return worstVal
+    # If we are at not at maximum depth, return the minimum of each successive ghosts minimizer value.
+    # Eventually, this will proc the previous if statement, complete the level traversal at currDepth,
+    # and move on to the next one.
+    else:
+      legalActions = gameState.getLegalActions(agentIdx)
+      worstVal = float('inf')
+      successors = [gameState.generateSuccessor(agentIdx, action) for action in legalActions]
+      for succGameState in successors:
+        worstVal = min(worstVal, self.minimizer(succGameState, currDepth, agentIdx+1, alpha, beta))
+        if worstVal <= alpha:
+          return worstVal
+        beta = min(beta, worstVal)
+      return worstVal
+
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
   """
@@ -189,7 +359,62 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
       legal moves.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    initDepth = 1
+    action = self.maximizer(gameState, initDepth)
+    print(action)
+    return action
+
+  def maximizer(self, gameState, currDepth):
+    # PacMan maximizer node.
+    # If game is over, return the value of the current gameState
+    if gameState.isWin() or gameState.isLose():
+      return self.evaluationFunction(gameState)
+    # Default best move to STOP.
+    bestMove = Directions.STOP
+    bestVal = float('-inf')
+    legalActions = gameState.getLegalActions(0)
+    # For every action, find the max value and action the minimizer nodes one level down would return.
+    successors = [(gameState.generateSuccessor(0, action), action) for action in legalActions]
+    for succ in successors:
+      tempVal = self.minimizer(succ[0], currDepth, 1)
+      if tempVal > bestVal:
+        bestVal = tempVal
+        bestMove = succ[1]
+
+    # If we have recursed back to the root maximizer node, return the action.
+    # Otherwise, return the value (only at the root does the action matter).
+    if currDepth == 1:
+      return bestMove
+    return bestVal
+
+  def minimizer(self, gameState, currDepth, agentIdx):
+    # Ghost minimizer node.
+    if gameState.isWin() or gameState.isLose():
+      return self.evaluationFunction(gameState)
+    # If we have run out of ghosts, we must now consider PacMan's turn and return the minimum.
+    if agentIdx == gameState.getNumAgents() - 1:
+      legalActions = gameState.getLegalActions(agentIdx)
+      expVal = 0
+      successors = [gameState.generateSuccessor(agentIdx, action) for action in legalActions]
+      # If we are at maximum depth, return the value of each successor gameState.
+      if currDepth == self.treeDepth:
+        for succGameState in successors:
+          expVal += self.evaluationFunction(succGameState)
+      # If not, then return the min value of maximizer nodes on successor gameStates.
+      else:
+        for succGameState in successors:
+          expVal += self.maximizer(succGameState, currDepth+1)
+      return expVal / (gameState.getNumAgents() - 1)
+    # If we are at not at maximum depth, return the minimum of each successive ghosts minimizer value.
+    # Eventually, this will proc the previous if statement, complete the level traversal at currDepth,
+    # and move on to the next one.
+    else:
+      legalActions = gameState.getLegalActions(agentIdx)
+      successors = [gameState.generateSuccessor(agentIdx, action) for action in legalActions]
+      ghostVals = 0
+      for succGameState in successors:
+        ghostVals += self.minimizer(succGameState, currDepth, agentIdx+1)
+      return ghostVals/(gameState.getNumAgents() - 1)
 
 def betterEvaluationFunction(currentGameState):
   """
