@@ -64,20 +64,18 @@ class ReflexAgent(Agent):
     successorGameState = currentGameState.generatePacmanSuccessor(action)
     newPos = successorGameState.getPacmanPosition()
     oldFood = currentGameState.getFood()
-    foodCount = currentGameState.getNumFood()
     foodList = oldFood.asList()
-    #print(foodList)
 
-
-    newGhostStates = successorGameState.getGhostStates()
-    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
     score = successorGameState.getScore()
     if successorGameState.isWin():
       return float('inf')
+    if successorGameState.isLose():
+      return float('-inf')
 
+    scaryGhostList = [ghost.getPosition() for ghost in currentGameState.getGhostStates() if ghost.scaredTimer == 0]
     # Get distance of closest ghost.
-    ghostDist = min([manhattanDistance(gPos, newPos) for gPos in successorGameState.getGhostPositions()])
+    ghostDist = min([manhattanDistance(gPos, newPos) for gPos in scaryGhostList] + [500])
 
     # If ghost is on this position, you die. So, penalize.
     if ghostDist == 0:
@@ -87,7 +85,9 @@ class ReflexAgent(Agent):
     # 18 because PacMan kept getting stuck around 18?
     # is 18 a magic number? 17 fails like 3/10 times but 18 works 10/10 times lol.
     # Definitely has to do with the size of the game board.
-    if ghostDist > 18:
+    # EDIT: Upped the value to 20 because was getting errors 2/10 times on 19 (w/ fixed seed).
+    # Got better score w/ 20. I should have printed these out and averaged them to be honest.
+    if ghostDist > 20:
       ghostDist -= 500
 
     # Found that PacMan would play too conservatively(?) if the ratio of ghostDist / foodDist wasn't very optimal.
@@ -361,7 +361,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     "*** YOUR CODE HERE ***"
     initDepth = 1
     action = self.maximizer(gameState, initDepth)
-    print(action)
+    #print(action)
     return action
 
   def maximizer(self, gameState, currDepth):
@@ -421,10 +421,52 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: I wanted to capitalize on the ratio: closest ghost dist / closest food dist, along with
+                  penalizing and rewarding factors added on, given different conditions.
+    Consider the following cases for this ratio:
+        1. ghostDist and foodDist are similar
+            - Then this state is fairly neutral. The score sees a moderate boost.
+            - If this state is picked, it's because neither extreme is present.
+        2. ghostDist is small (but not too small!) and foodDist is large
+            - then the score will see a smaller boost compared to the neutral case.
+            - If ghostDist is too small, then we heavily penalize it with -1000
+            - We definitely never want to move where ghosts are too close for comfort.
+        3. If ghostDist is large, and foodDist is small
+            - Highly preferred state to be in, so score gets a large boost.
+            - NOTE: that if the ghostDist is too large, then it may be hard to differentiate between
+            - similar states, and might lead to stalling or thrashing.
+              - Thus if ghostDist is too large, we penalize it to prefer getting closer to ghosts for
+              - food pellets. Pacman won't be as hyper-safe in this case, and will be willing
+              - to move closer to ghosts (because we already know the closest is far away).
+    This is a slightly augmented version of my reflex agent, because this can't evaluate given an action.
+    On top of this, I also added several things.
+    1. Only evaluate ghosts who are not scared. I've also added this to my reflex agent, but previously it
+        would evaluate all ghosts, regardless of their state.
+    2. If a closest ghost is <= 3 units away, then severely penalize this state.
+        Because of the unpredictable nature of Expectimax, it is too risky to let ghosts get close.
+        So I shy away from all states where ghosts are too close to comfort.
+
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  if currentGameState.isWin():
+    return float('inf')
+  if currentGameState.isLose():
+    return float('-inf')
+  pacManPos = currentGameState.getPacmanPosition()
+  score = currentGameState.getScore()
+  foodList = currentGameState.getFood().asList()
+  scaryGhostList = [ghost.getPosition() for ghost in currentGameState.getGhostStates() if ghost.scaredTimer == 0]
+  ghostDist = min([manhattanDistance(gPos, pacManPos) for gPos in scaryGhostList] + [500])
+  if ghostDist <= 3:
+    ghostDist -= 1000
+
+  if ghostDist > 18:
+    ghostDist -= 500
+
+  foodDist = min([manhattanDistance(fPos, pacManPos) for fPos in foodList])
+  score += ghostDist / foodDist
+  return score
+
 
 # Abbreviation
 better = betterEvaluationFunction

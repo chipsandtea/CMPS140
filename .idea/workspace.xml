@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="76dd5ae5-22e0-424d-97f1-472f43601ff4" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/p2/multiAgents.py" afterPath="$PROJECT_DIR$/p2/multiAgents.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,13 +12,13 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.63059163">
+    <splitter split-orientation="horizontal" split-proportion="0.6002886">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="searchAgents.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/p1/searchAgents.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="5280">
+                <state relative-caret-position="615">
                   <caret line="494" column="3" lean-forward="false" selection-start-line="494" selection-start-column="3" selection-end-line="494" selection-end-column="99" />
                   <folding>
                     <element signature="e#1799#4862#0" expanded="false" />
@@ -48,9 +47,16 @@
           <file leaf-file-name="multiAgents.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/p2/multiAgents.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="519">
-                  <caret line="385" column="22" lean-forward="true" selection-start-line="385" selection-start-column="22" selection-end-line="385" selection-end-column="22" />
-                  <folding />
+                <state relative-caret-position="437">
+                  <caret line="465" column="44" lean-forward="true" selection-start-line="465" selection-start-column="44" selection-end-line="465" selection-end-column="44" />
+                  <folding>
+                    <element signature="e#883#1691#0" expanded="false" />
+                    <element signature="e#4835#5639#0" expanded="false" />
+                    <element signature="e#5686#9094#0" expanded="false" />
+                    <element signature="e#9098#10352#1" expanded="false" />
+                    <element signature="e#10405#13674#0" expanded="false" />
+                    <element signature="e#13726#16655#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -62,8 +68,8 @@
           <file leaf-file-name="pacman.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/p2/pacman.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="300">
-                  <caret line="166" column="40" lean-forward="false" selection-start-line="166" selection-start-column="40" selection-end-line="166" selection-end-column="40" />
+                <state relative-caret-position="206">
+                  <caret line="391" column="24" lean-forward="false" selection-start-line="391" selection-start-column="18" selection-end-line="391" selection-end-column="24" />
                   <folding>
                     <element signature="e#3236#4255#0" expanded="false" />
                   </folding>
@@ -92,6 +98,7 @@
       <find>getState</find>
       <find>mazeDistance</find>
       <find>getLegalActions</find>
+      <find>scared</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -260,7 +267,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1200">
           <caret line="84" column="31" lean-forward="false" selection-start-line="84" selection-start-column="31" selection-end-line="84" selection-end-column="31" />
-          <folding />
+          <folding>
+            <element signature="e#883#1691#0" expanded="false" />
+            <element signature="e#4835#5639#0" expanded="false" />
+            <element signature="e#5686#9094#0" expanded="false" />
+            <element signature="e#9098#10352#1" expanded="false" />
+            <element signature="e#10405#13674#0" expanded="false" />
+            <element signature="e#13726#16655#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -779,9 +793,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/p2/game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="548">
+          <caret line="354" column="19" lean-forward="true" selection-start-line="354" selection-start-column="19" selection-end-line="354" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/p1/searchAgents.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5280">
+        <state relative-caret-position="615">
           <caret line="494" column="3" lean-forward="false" selection-start-line="494" selection-start-column="3" selection-end-line="494" selection-end-column="99" />
           <folding>
             <element signature="e#1799#4862#0" expanded="false" />
@@ -806,18 +828,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/p2/game.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="548">
-          <caret line="354" column="19" lean-forward="true" selection-start-line="354" selection-start-column="19" selection-end-line="354" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/p2/pacman.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="166" column="40" lean-forward="false" selection-start-line="166" selection-start-column="40" selection-end-line="166" selection-end-column="40" />
+        <state relative-caret-position="206">
+          <caret line="391" column="24" lean-forward="false" selection-start-line="391" selection-start-column="18" selection-end-line="391" selection-end-column="24" />
           <folding>
             <element signature="e#3236#4255#0" expanded="false" />
           </folding>
@@ -826,9 +840,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/p2/multiAgents.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="519">
-          <caret line="385" column="22" lean-forward="true" selection-start-line="385" selection-start-column="22" selection-end-line="385" selection-end-column="22" />
-          <folding />
+        <state relative-caret-position="437">
+          <caret line="465" column="44" lean-forward="true" selection-start-line="465" selection-start-column="44" selection-end-line="465" selection-end-column="44" />
+          <folding>
+            <element signature="e#883#1691#0" expanded="false" />
+            <element signature="e#4835#5639#0" expanded="false" />
+            <element signature="e#5686#9094#0" expanded="false" />
+            <element signature="e#9098#10352#1" expanded="false" />
+            <element signature="e#10405#13674#0" expanded="false" />
+            <element signature="e#13726#16655#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
