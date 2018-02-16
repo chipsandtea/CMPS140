@@ -40,20 +40,34 @@ class ValueIterationAgent(ValueEstimationAgent):
     [Enter a description of what you did here.]
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    # We want to start at V_0(s) and work our way up.
+    # Currently, all values default to 0 for every state.
+    allStates = mdp.getStates()
+    for _ in range(iters):
+      for state in allStates:
+        self.values[state] = self.getValue(state)
+    print('terminate')
     """ END CODE """
 
   def getValue(self, state):
     """
       Return the value of the state (computed in __init__).
     """
-    return self.values[state]
-
     """Description:
-    [Enter a description of what you did here.]
+    V_k+1(s) := max_a sum_(s') T(s,a,s')[R(s,a,s') + gV_k(s')]
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    possibleActions = self.mdp.getPossibleActions(state)
+    maxVal = 0
+    bestAction = None
+    for action in possibleActions:
+      tempVal = self.getQValue(state, action)
+      if tempVal > maxVal:
+        if tempVal > maxVal:
+          maxVal = tempVal
+          bestAction = action
+    self.values[state] = maxVal
+    return maxVal
     """ END CODE """
 
   def getQValue(self, state, action):
@@ -65,10 +79,24 @@ class ValueIterationAgent(ValueEstimationAgent):
       to derive it on the fly.
     """
     """Description:
-    [Enter a description of what you did here.]
+    Q(s,a) = expected utility starting out having taken an action from state s and acting optimally.
+    To compute, we need:
+      - Possible next states weighted by their probability of occuring.
+      - Reward for going from R(s,a,s')
+      - Discount (mdp.discountRate)
+      - k-1's discounted value for s': V(s')
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    # Get list of successor states and their probabilities as (state, probability)
+    successorStates = self.mdp.getTransitionStatesAndProbs(state, action)
+    # For each successor, compute its reward and add discounted value of previous s'.
+    totalVal = 0
+    #print(successorStates)
+    for successor, probability in successorStates:
+      reward = self.mdp.getReward(state, action, successor)
+      futureVal = self.discountRate * self.values[successor]
+      totalVal += probability * (reward + futureVal)
+    return totalVal
     """ END CODE """
 
   def getPolicy(self, state):
@@ -81,10 +109,22 @@ class ValueIterationAgent(ValueEstimationAgent):
     """
 
     """Description:
-    [Enter a description of what you did here.]
+    Given a state, loop through possible actions one can make from this state.
+    Return the action with the highest Q-Value.
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    if self.mdp.isTerminal(state):
+      return None
+    possibleActions = self.mdp.getPossibleActions(state)
+    maxVal = -99999
+    bestAction = None
+    for action in possibleActions:
+      tempVal = self.getQValue(state, action)
+      if tempVal > maxVal:
+        if tempVal > maxVal:
+          maxVal = tempVal
+          bestAction = action
+    return bestAction
     """ END CODE """
 
   def getAction(self, state):
