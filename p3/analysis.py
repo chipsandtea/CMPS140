@@ -15,9 +15,13 @@
 
 def question2():
   answerDiscount = 0.9
-  answerNoise = 0.2
+  answerNoise = 0.0
   """Description:
-  [Enter a description of what you did here.]
+  The discount factor isn't small enough to make the agent stand still.
+  This means the agent will attempt to cross the bridge.
+  However, 0.2 noise is enough of a chance that the agent will fall off
+  the bridge unintentionally, so lowering it to 0 means the agent
+  will both attempt to cross and successfully execute on its chosen actions.
   """
   """ YOUR CODE HERE """
 

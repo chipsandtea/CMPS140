@@ -46,6 +46,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     for _ in range(iters):
       for state in allStates:
         self.values[state] = self.getValue(state)
+    #print(self.getQValue((3,2),"east"))
     print('terminate')
     """ END CODE """
 
@@ -59,13 +60,11 @@ class ValueIterationAgent(ValueEstimationAgent):
     """ YOUR CODE HERE """
     possibleActions = self.mdp.getPossibleActions(state)
     maxVal = 0
-    bestAction = None
     for action in possibleActions:
       tempVal = self.getQValue(state, action)
       if tempVal > maxVal:
         if tempVal > maxVal:
           maxVal = tempVal
-          bestAction = action
     self.values[state] = maxVal
     return maxVal
     """ END CODE """
@@ -91,11 +90,12 @@ class ValueIterationAgent(ValueEstimationAgent):
     successorStates = self.mdp.getTransitionStatesAndProbs(state, action)
     # For each successor, compute its reward and add discounted value of previous s'.
     totalVal = 0
-    #print(successorStates)
     for successor, probability in successorStates:
       reward = self.mdp.getReward(state, action, successor)
       futureVal = self.discountRate * self.values[successor]
       totalVal += probability * (reward + futureVal)
+      if self.mdp.isTerminal(successor):
+        print(successor, probability, reward, totalVal)
     return totalVal
     """ END CODE """
 
