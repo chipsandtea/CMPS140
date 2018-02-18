@@ -43,11 +43,10 @@ class ValueIterationAgent(ValueEstimationAgent):
     # We want to start at V_0(s) and work our way up.
     # Currently, all values default to 0 for every state.
     allStates = mdp.getStates()
-    for _ in range(iters):
+    for _ in range(1, iters):
       for state in allStates:
         self.values[state] = self.getValue(state)
     #print(self.getQValue((3,2),"east"))
-    print('terminate')
     """ END CODE """
 
   def getValue(self, state):
@@ -59,12 +58,16 @@ class ValueIterationAgent(ValueEstimationAgent):
     """
     """ YOUR CODE HERE """
     possibleActions = self.mdp.getPossibleActions(state)
-    maxVal = 0
+    maxVal = None
     for action in possibleActions:
       tempVal = self.getQValue(state, action)
+      if not maxVal:
+        maxVal = tempVal
       if tempVal > maxVal:
         if tempVal > maxVal:
           maxVal = tempVal
+    if not maxVal:
+      maxVal = 0
     self.values[state] = maxVal
     return maxVal
     """ END CODE """
@@ -94,8 +97,6 @@ class ValueIterationAgent(ValueEstimationAgent):
       reward = self.mdp.getReward(state, action, successor)
       futureVal = self.discountRate * self.values[successor]
       totalVal += probability * (reward + futureVal)
-      if self.mdp.isTerminal(successor):
-        print(successor, probability, reward, totalVal)
     return totalVal
     """ END CODE """
 
@@ -116,7 +117,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     if self.mdp.isTerminal(state):
       return None
     possibleActions = self.mdp.getPossibleActions(state)
-    maxVal = -99999
+    maxVal = 0
     bestAction = None
     for action in possibleActions:
       tempVal = self.getQValue(state, action)
