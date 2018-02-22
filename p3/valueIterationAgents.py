@@ -37,16 +37,21 @@ class ValueIterationAgent(ValueEstimationAgent):
     self.values = util.Counter() # A Counter is a dict with default 0
 
     """Description:
-    [Enter a description of what you did here.]
+    V_k+1(s) := max_a sum_(s') T(s,a,s')[R(s,a,s') + gV_k(s')]
     """
     """ YOUR CODE HERE """
     # We want to start at V_0(s) and work our way up.
     # Currently, all values default to 0 for every state.
     allStates = mdp.getStates()
-    for _ in range(1, iters):
+    for _ in range(iters):
+      tempValues = self.values.copy()
       for state in allStates:
-        self.values[state] = self.getValue(state)
-    #print(self.getQValue((3,2),"east"))
+        if self.mdp.isTerminal(state):
+          continue
+        actions = self.mdp.getPossibleActions(state)
+        maxVal = max(self.getQValue(state, action) for action in actions)
+        tempValues[state] = maxVal
+      self.values = tempValues
     """ END CODE """
 
   def getValue(self, state):
@@ -57,19 +62,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     V_k+1(s) := max_a sum_(s') T(s,a,s')[R(s,a,s') + gV_k(s')]
     """
     """ YOUR CODE HERE """
-    possibleActions = self.mdp.getPossibleActions(state)
-    maxVal = None
-    for action in possibleActions:
-      tempVal = self.getQValue(state, action)
-      if not maxVal:
-        maxVal = tempVal
-      if tempVal > maxVal:
-        if tempVal > maxVal:
-          maxVal = tempVal
-    if not maxVal:
-      maxVal = 0
-    self.values[state] = maxVal
-    return maxVal
+    return self.values[state]
     """ END CODE """
 
   def getQValue(self, state, action):
@@ -95,7 +88,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     totalVal = 0
     for successor, probability in successorStates:
       reward = self.mdp.getReward(state, action, successor)
-      futureVal = self.discountRate * self.values[successor]
+      futureVal = self.discountRate * self.getValue(successor)
       totalVal += probability * (reward + futureVal)
     return totalVal
     """ END CODE """
