@@ -100,10 +100,11 @@ def question6():
   answerEpsilon = None
   answerLearningRate = None
   """Description:
-  [Enter a description of what you did here.]
+  Too low of an epsilon leads to thrashing.
+  Too high epsilon is too unpredictable to reliably trace the path enough times to converge on policy.
   """
   """ YOUR CODE HERE """
-
+  return 'NOT POSSIBLE'
   """ END CODE """
   return answerEpsilon, answerLearningRate
   # If not possible, return 'NOT POSSIBLE'
