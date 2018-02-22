@@ -51,7 +51,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         actions = self.mdp.getPossibleActions(state)
         maxVal = max(self.getQValue(state, action) for action in actions)
         tempValues[state] = maxVal
-      self.values = tempValues
+      self.values = tempValues.copy()
     """ END CODE """
 
   def getValue(self, state):
@@ -110,7 +110,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     if self.mdp.isTerminal(state):
       return None
     possibleActions = self.mdp.getPossibleActions(state)
-    maxVal = 0
+    maxVal = float('-inf')
     bestAction = None
     for action in possibleActions:
       tempVal = self.getQValue(state, action)

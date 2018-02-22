@@ -29,11 +29,12 @@ def question2():
   return answerDiscount, answerNoise
 
 def question3a():
-  answerDiscount = 0.9
-  answerNoise = 0.2
+  answerDiscount = 0.3
+  answerNoise = 0.0
   answerLivingReward = 0.0
   """Description:
-  [Enter a description of what you did here.]
+  High confidence (to walk cliff side)
+  Prioritize 1.0 exit must highly penalize further rewards.
   """
   """ YOUR CODE HERE """
 
@@ -42,11 +43,11 @@ def question3a():
   # If not possible, return 'NOT POSSIBLE'
 
 def question3b():
-  answerDiscount = 0.9
+  answerDiscount = 0.3
   answerNoise = 0.2
   answerLivingReward = 0.0
   """Description:
-  [Enter a description of what you did here.]
+  Low confidence at all means prioritizing closer exit but safer route.
   """
   """ YOUR CODE HERE """
 
@@ -56,10 +57,11 @@ def question3b():
 
 def question3c():
   answerDiscount = 0.9
-  answerNoise = 0.2
+  answerNoise = 0.0
   answerLivingReward = 0.0
   """Description:
-  [Enter a description of what you did here.]
+  High confidence to walk cliff side.
+  Very little discount so further reward (+10) is still better.
   """
   """ YOUR CODE HERE """
 
@@ -72,7 +74,8 @@ def question3d():
   answerNoise = 0.2
   answerLivingReward = 0.0
   """Description:
-  [Enter a description of what you did here.]
+  Reduced confidence means cliff side pretty much never preferred.
+  Little discount so further reward (+10) still better.
   """
   """ YOUR CODE HERE """
 
@@ -81,9 +84,9 @@ def question3d():
   # If not possible, return 'NOT POSSIBLE'
 
 def question3e():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  answerLivingReward = 0.0
+  answerDiscount = 1.0
+  answerNoise = 0.0
+  answerLivingReward = 1.0
   """Description:
   [Enter a description of what you did here.]
   """
