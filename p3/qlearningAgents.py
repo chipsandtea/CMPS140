@@ -36,6 +36,8 @@ class QLearningAgent(ReinforcementAgent):
   def __init__(self, **args):
     "You can initialize Q-values here..."
     ReinforcementAgent.__init__(self, **args)
+    # Dictionary of (state, action) pairs, init at 0.
+    self.qvalues = util.Counter()
 
 
 
@@ -46,10 +48,11 @@ class QLearningAgent(ReinforcementAgent):
       a state or (state,action) tuple
     """
     """Description:
-    [Enter a description of what you did here.]
+    Returns the self.qvalues[(state, action)] value.
+    B/C self.qvalues is a counter, unseen (state, action) pairs init to 0.
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    return self.qvalues[(state, action)]
     """ END CODE """
 
 
@@ -62,10 +65,20 @@ class QLearningAgent(ReinforcementAgent):
       terminal state, you should return a value of 0.0.
     """
     """Description:
-    [Enter a description of what you did here.]
+    1. Get legal actions.
+    2. Look up Q-Values of (state, action) pairs.
+    3. Return the maxVal.
+    
+    NOTE: Init maxVal to 0.0 so if all known Q values are negative, might be better to explore!
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    legalActions = self.getLegalActions(state)
+    if len(legalActions) == 0:
+      return 0.0
+    maxVal = float('-inf')
+    for action in legalActions:
+      maxVal = max(maxVal, self.getQValue(state, action))
+    return maxVal
     """ END CODE """
 
   def getPolicy(self, state):
@@ -75,10 +88,32 @@ class QLearningAgent(ReinforcementAgent):
       you should return None.
     """
     """Description:
-    [Enter a description of what you did here.]
+    1. Get legal actions.
+    2. Look up Q-Values of (state, action) pairs.
+    3. If maxVal ties w/ new Q-value, break tie randomly.
+    4. Return bestAction.
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    legalActions = self.getLegalActions(state)
+    if len(legalActions) == 0:
+      return None
+    maxVal = float('-inf')
+    bestAction = None
+    for action in legalActions:
+      tempVal = self.getQValue(state, action)
+      if maxVal == tempVal:
+        if util.flipCoin(0.5):
+          maxVal = tempVal
+          bestAction = action
+        else:
+          continue
+      else:
+        if maxVal < tempVal:
+          maxVal = tempVal
+          bestAction = action
+        else:
+          continue
+    return bestAction
     """ END CODE """
 
   def getAction(self, state):
@@ -93,14 +128,21 @@ class QLearningAgent(ReinforcementAgent):
       HINT: To pick randomly from a list, use random.choice(list)
     """
     # Pick Action
-    legalActions = self.getLegalActions(state)
     action = None
 
     """Description:
-    [Enter a description of what you did here.]
+    1. Flip a coin w/ p = self.epsilon.
+    2. If true, then randomly return action from legalActions.
+    3. Else, lookup and return policy action w/ self.getPolicy(state).
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    legalActions = self.getLegalActions(state)
+    if len(legalActions) == 0:
+      return action
+    if util.flipCoin(self.epsilon):
+      return random.choice(legalActions)
+    else:
+      return self.getPolicy(state)
     """ END CODE """
 
     return action
@@ -115,10 +157,16 @@ class QLearningAgent(ReinforcementAgent):
       it will be called on your behalf
     """
     """Description:
-    [Enter a description of what you did here.]
+    Given an instance (s, a, s', r), perform the Q update.
+    EQN: Q(s,a) = (1-alpha) * Q(s,a) + (alpha) * [r + (lambda * max(Q(s', a')))]
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    learningRate = self.alpha
+    discount = self.discountRate
+
+    prevQ = (1 - learningRate) * self.getQValue(state, action)
+    nextQ = learningRate * (reward + (discount * self.getValue(nextState)))
+    self.qvalues[(state, action)] = prevQ + nextQ
     """ END CODE """
 
 class PacmanQAgent(QLearningAgent):
