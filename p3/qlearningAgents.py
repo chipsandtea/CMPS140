@@ -211,6 +211,8 @@ class ApproximateQAgent(PacmanQAgent):
   """
   def __init__(self, extractor='IdentityExtractor', **args):
     self.featExtractor = util.lookup(extractor, globals())()
+    #self.qvalues = util.Counter()
+    self.weights = util.Counter()
     PacmanQAgent.__init__(self, **args)
 
     # You might want to initialize weights here.
@@ -224,7 +226,9 @@ class ApproximateQAgent(PacmanQAgent):
     [Enter a description of what you did here.]
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    # return self.qvalues[(state, action)]
+    features = self.featExtractor.getFeatures(state, action)
+    return features * self.weights
     """ END CODE """
 
   def update(self, state, action, nextState, reward):
@@ -232,10 +236,15 @@ class ApproximateQAgent(PacmanQAgent):
        Should update your weights based on transition
     """
     """Description:
-    [Enter a description of what you did here.]
+    Q(s,a) = sum_(i,n) f_i(s,a) * w_i
+    w_i = w_i + (alpha * correction) * f_i(s,a)
+    correction = (reward + lambda * V(s')) - Q(s,a)
     """
     """ YOUR CODE HERE """
-    util.raiseNotDefined()
+    features = self.featExtractor.getFeatures(state, action)
+    correction = (reward + (self.discountRate * self.getValue(nextState))) - self.getQValue(state, action)
+    for f in features:
+      self.weights[f] = self.weights[f] + (self.alpha * correction * features[f])
     """ END CODE """
 
   def final(self, state):
@@ -246,4 +255,5 @@ class ApproximateQAgent(PacmanQAgent):
     # did we finish training?
     if self.episodesSoFar == self.numTraining:
       # you might want to print your weights here for debugging
-      util.raiseNotDefined()
+      print(self.weights)
+      #util.raiseNotDefined()
