@@ -46,6 +46,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     for _ in range(iters):
       tempValues = self.values.copy()
       for state in allStates:
+
         if self.mdp.isTerminal(state):
           continue
         actions = self.mdp.getPossibleActions(state)
