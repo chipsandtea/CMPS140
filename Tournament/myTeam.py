@@ -68,9 +68,6 @@ class DummyAgent(CaptureAgent):
     CaptureAgent.registerInitialState(self, gameState)
     self.treeDepth = 3
     self.opponents = self.getOpponents(gameState)
-    self.numOfOpponents = len(self.opponents)
-    print(gameState)
-    print(self.opponents)
     ''' 
     Your initialization code goes here, if you need any.
     '''
@@ -140,27 +137,50 @@ class DummyAgent(CaptureAgent):
     """
     Picks among actions randomly.
     """
-    initDepth = 1
-    action = self.maximizer(gameState, initDepth)
-    return action
+    maxVal = 0
+    bestAction = ''
+    obsGameState = self.getCurrentObservation()
+    legalActions = obsGameState.getLegalActions(self.index)
+    for action in legalActions:
+      succState = obsGameState.generateSuccessor(self.index, action)
+      tempVal = self.evaluationFunction(succState)
+      if tempVal > maxVal:
+        maxVal = tempVal
+        bestAction = action
+    return bestAction
   
   def evaluationFunction(self, currentGameState):
-    if currentGameState.isWin():
+    if currentGameState.isOver():
       return float('inf')
-    if currentGameState.isLose():
-      return float('-inf')
-    pacManPos = currentGameState.getPacmanPosition()
+    pacManPos = currentGameState.getAgentPosition(self.index)
     score = currentGameState.getScore()
-    foodList = currentGameState.getFood().asList()
-    scaryGhostList = [ghost.getPosition() for ghost in currentGameState.getGhostStates() if ghost.scaredTimer == 0]
+    foodList = self.getFood(currentGameState).asList()
+    foodDist = min([util.manhattanDistance(fPos, pacManPos) for fPos in foodList])
+
+    scaryGhostList = []
+    # print(currentGameState.getAgentState(self.index).configuration)
+    for opp_idx in self.getOpponents(currentGameState):
+      oppAgent = currentGameState.getAgentState(opp_idx)
+      if oppAgent.configuration:
+        if not oppAgent.isPacman and oppAgent.scaredTimer == 0:
+          scaryGhostList.append(oppAgent.getPosition())
+    
+    if len(scaryGhostList) == 0:
+      score += foodDist
+      #print(score)
+      return score
     ghostDist = min([util.manhattanDistance(gPos, pacManPos) for gPos in scaryGhostList] + [500])
     if ghostDist <= 3:
       ghostDist -= 1000
 
     if ghostDist > 18:
       ghostDist -= 500
-
+    
+    if ghostDist == 0:
+      ghostDist = 1
     foodDist = min([util.manhattanDistance(fPos, pacManPos) for fPos in foodList])
+    #print(ghostDist, foodDist)
     score += ghostDist / foodDist
+    print(foundGhosts)
     return score
 
