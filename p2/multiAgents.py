@@ -220,49 +220,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         worstVal = min(worstVal, self.minimizer(succGameState, currDepth, agentIdx+1))
       return worstVal
 
-
-
-'''
-  def minimax(self, gameState, agentIdx, currDepth):
-    # If terminal node, return node value.
-    if currDepth == self.treeDepth:
-      return ('', self.evaluationFunction(gameState))
-
-    # If agentIdx > number of agents, reset to PacMan idx.
-    if agentIdx >= gameState.getNumAgents():
-      agentIdx = 0
-      currDepth += 1
-
-    if agentIdx == 0: # If we're PacMan, then play as Maximizer node.
-      val = (Directions.STOP, float('-inf'))
-      legalActions = gameState.getLegalActions(agentIdx)
-      for action in legalActions:
-        #print(action)
-        if action == Directions.STOP:
-          continue
-        tempVal = (action, self.minimax(gameState.generateSuccessor(agentIdx, action), agentIdx+1, currDepth))
-        if tempVal[1] > val[1]:
-          val = tempVal
-      #print(val)
-      return val
-    else:
-      val = (Directions.STOP, float('inf'))
-      legalActions = gameState.getLegalActions(agentIdx)
-      for action in legalActions:
-        #print(action)
-        if action == Directions.STOP:
-          continue
-        tempVal = (action, self.minimax(gameState.generateSuccessor(agentIdx, action), agentIdx+1, currDepth))
-        if tempVal[1] < val[1]:
-          val = tempVal
-      #print(val)
-      return val
-'''
-
-
-
-
-
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
     Your minimax agent with alpha-beta pruning (question 3)

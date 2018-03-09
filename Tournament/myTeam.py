@@ -10,6 +10,7 @@ from captureAgents import CaptureAgent
 import random, time, util
 from game import Directions
 import game
+from distanceCalculator import Distancer
 
 #################
 # Team creation #
@@ -68,6 +69,11 @@ class DummyAgent(CaptureAgent):
     CaptureAgent.registerInitialState(self, gameState)
     self.treeDepth = 3
     self.opponents = self.getOpponents(gameState)
+    self.distCalc = Distancer(gameState.data.layout)
+    self.distCalc.getMazeDistances()
+    self.prevPos = gameState.getAgentPosition(self.index)
+
+
     ''' 
     Your initialization code goes here, if you need any.
     '''
@@ -119,10 +125,6 @@ class DummyAgent(CaptureAgent):
     # Eventually, this will proc the previous if statement, complete the level traversal at currDepth,
     # and move on to the next one.
     else:
-      print('hi')
-      print(self.opponents[agentIdx])
-      print(dir(gameState))
-      print(self.getCurrentObservation())
       legalActions = gameState.getLegalActions(self.opponents[agentIdx])
       print(legalActions)
       successors = [gameState.generateSuccessor(self.opponents[agentIdx], action) for action in legalActions]
@@ -137,39 +139,63 @@ class DummyAgent(CaptureAgent):
     """
     Picks among actions randomly.
     """
-    maxVal = 0
-    bestAction = ''
-    obsGameState = self.getCurrentObservation()
-    legalActions = obsGameState.getLegalActions(self.index)
+    maxVal = float('-inf')
+    bestAction = Directions.STOP
+    legalActions = gameState.getLegalActions(self.index)
+    closestGhost = float('-inf')
+    closestFood = float('-inf')
+    myState = gameState.getAgentState(self.index)
+
     for action in legalActions:
-      succState = obsGameState.generateSuccessor(self.index, action)
-      tempVal = self.evaluationFunction(succState)
+      if action == Directions.STOP:
+        continue
+      succState = gameState.generateSuccessor(self.index, action)
+      tempVal, ghostDist, foodDist = self.evaluationFunction(succState)
+      if self.index == 1:
+        print(ghostDist, foodDist, tempVal)
       if tempVal > maxVal:
         maxVal = tempVal
         bestAction = action
+      if ghostDist > closestGhost:
+        closestGhost = ghostDist
+      if foodDist > closestFood:
+        closestFood = foodDist
+    if self.index == 1:
+      print(closestGhost, closestFood, maxVal)
+      print('=====')
+    self.prevPos = myState.getPosition()
     return bestAction
   
   def evaluationFunction(self, currentGameState):
     if currentGameState.isOver():
       return float('inf')
-    pacManPos = currentGameState.getAgentPosition(self.index)
-    score = currentGameState.getScore()
+    myState = currentGameState.getAgentState(self.index)
+    pacManPos = myState.getPosition()
+    score = float(currentGameState.getScore())
     foodList = self.getFood(currentGameState).asList()
-    foodDist = min([util.manhattanDistance(fPos, pacManPos) for fPos in foodList])
+    foodDist = min([self.distCalc.getDistance(fPos, pacManPos) for fPos in foodList])
+    
+    #print(myState)
 
     scaryGhostList = []
     # print(currentGameState.getAgentState(self.index).configuration)
+    #print(type(currentGameState.getAgentDistances()))
+    #print(currentGameState.getAgentDistances())
+    noisyDists = currentGameState.getAgentDistances()
     for opp_idx in self.getOpponents(currentGameState):
       oppAgent = currentGameState.getAgentState(opp_idx)
-      if oppAgent.configuration:
+      if oppAgent.getPosition() != None:
         if not oppAgent.isPacman and oppAgent.scaredTimer == 0:
-          scaryGhostList.append(oppAgent.getPosition())
-    
-    if len(scaryGhostList) == 0:
-      score += foodDist
-      #print(score)
-      return score
-    ghostDist = min([util.manhattanDistance(gPos, pacManPos) for gPos in scaryGhostList] + [500])
+          scaryGhostList.append(self.distCalc.getDistance(myState.getPosition(), oppAgent.getPosition()))
+      else:
+        if not oppAgent.isPacman and oppAgent.scaredTimer == 0:
+          scaryGhostList.append(noisyDists[opp_idx])
+    #print(scaryGhostList)
+    unseen = True
+    if unseen:
+      #print(currentGameState)
+      unseen = False
+    ghostDist = min(scaryGhostList)
     if ghostDist <= 3:
       ghostDist -= 1000
 
@@ -178,9 +204,8 @@ class DummyAgent(CaptureAgent):
     
     if ghostDist == 0:
       ghostDist = 1
-    foodDist = min([util.manhattanDistance(fPos, pacManPos) for fPos in foodList])
-    #print(ghostDist, foodDist)
-    score += ghostDist / foodDist
-    print(foundGhosts)
-    return score
+    ghostDist = float(ghostDist)
+    foodDist = float(foodDist) 
+    score += (ghostDist / foodDist)
+    return score, ghostDist, foodDist
 
